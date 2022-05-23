@@ -49,6 +49,15 @@ const run = async () => {
             const result = await ordersCollection.insertOne(order);
             res.send(result);
         });
+
+        // orders api
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const filter = {email}
+            const result = await ordersCollection.find(filter).toArray()
+
+            res.send(result)
+        })
     } finally {
     }
 };
