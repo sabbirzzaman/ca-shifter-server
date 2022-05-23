@@ -52,6 +52,22 @@ const run = async () => {
 
         // orders api
         app.get('/orders', async (req, res) => {
+            const result = await ordersCollection.find().toArray();
+
+            res.send(result);
+        });
+
+        // orders api by id
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await ordersCollection.findOne(filter);
+
+            res.send(result);
+        });
+
+        // orders api by user
+        app.get('/orders', async (req, res) => {
             const email = req.query.email;
             const filter = { email };
             const result = await ordersCollection.find(filter).toArray();
