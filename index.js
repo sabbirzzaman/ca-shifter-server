@@ -53,11 +53,20 @@ const run = async () => {
         // orders api
         app.get('/orders', async (req, res) => {
             const email = req.query.email;
-            const filter = {email}
-            const result = await ordersCollection.find(filter).toArray()
+            const filter = { email };
+            const result = await ordersCollection.find(filter).toArray();
 
-            res.send(result)
-        })
+            res.send(result);
+        });
+
+        // delete order
+        app.delete('/order', async (req, res) => {
+            const id = req.query.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(filter);
+
+            res.send(result);
+        });
     } finally {
     }
 };
