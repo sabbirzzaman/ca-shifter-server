@@ -23,6 +23,9 @@ const run = async () => {
 
     try {
         const partsCollection = client.db('db-collections').collection('parts');
+        const ordersCollection = client
+            .db('db-collections')
+            .collection('orders');
 
         // Parts APi
         app.get('/parts', async (req, res) => {
@@ -36,6 +39,14 @@ const run = async () => {
             const filter = { _id: ObjectId(id) };
             const result = await partsCollection.findOne(filter);
 
+            res.send(result);
+        });
+
+        // post order data form client
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+
+            const result = await ordersCollection.insertOne(order);
             res.send(result);
         });
     } finally {
