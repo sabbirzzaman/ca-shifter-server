@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,9 +24,28 @@ const run = async () => {
 
     try {
         const partsCollection = client.db('db-collections').collection('parts');
+
         const ordersCollection = client
             .db('db-collections')
             .collection('orders');
+
+        const paymentCollection = client
+            .db('db-collections')
+            .collection('payments');
+
+        // payment
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount,
+                currency: 'usd',
+                payment_method_types: ['card'],
+            });
+
+            res.send({ clientSecret: paymentIntent.client_secret });
+        });
 
         // Parts APi
         app.get('/parts', async (req, res) => {
@@ -73,6 +93,26 @@ const run = async () => {
             const result = await ordersCollection.find(filter).toArray();
 
             res.send(result);
+        });
+
+        // order paid
+        app.patch('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId,
+                },
+            };
+            const updatedOrder = await ordersCollection.updateOne(
+                filter,
+                updatedDoc
+            );
+            const result = await paymentCollection.insertOne(payment);
+
+            res.send(updatedOrder);
         });
 
         // delete order
