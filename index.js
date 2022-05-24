@@ -80,6 +80,16 @@ const run = async () => {
             res.send(result);
         });
 
+
+        // user api by email
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = {email};
+            const result = await usersCollection.findOne(filter);
+
+            res.send(result);
+        });
+
         // user post api
         app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
