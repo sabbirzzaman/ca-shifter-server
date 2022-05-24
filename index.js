@@ -33,6 +33,10 @@ const run = async () => {
             .db('db-collections')
             .collection('payments');
 
+        const reviewsCollection = client
+            .db('db-collections')
+            .collection('reviews');
+
         // payment
         app.post('/create-payment-intent', async (req, res) => {
             const { price } = req.body;
@@ -65,8 +69,8 @@ const run = async () => {
         // post order data form client
         app.post('/orders', async (req, res) => {
             const order = req.body;
-
             const result = await ordersCollection.insertOne(order);
+            
             res.send(result);
         });
 
@@ -123,6 +127,15 @@ const run = async () => {
 
             res.send(result);
         });
+
+        // reviews api
+        app.post('/reviews', async (req, res) =>{
+            const reviews = req.body;
+            const result = await reviewsCollection.insertOne(reviews);
+            
+            res.send(result)
+        })
+        
     } finally {
     }
 };
