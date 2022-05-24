@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,6 +25,8 @@ const run = async () => {
 
     try {
         const partsCollection = client.db('db-collections').collection('parts');
+
+        const usersCollection = client.db('db-collections').collection('users');
 
         const ordersCollection = client
             .db('db-collections')
@@ -51,9 +54,29 @@ const run = async () => {
             res.send({ clientSecret: paymentIntent.client_secret });
         });
 
+        // user api
+        app.put('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email };
+            const option = { upsart: true };
+            
+            const updatedDoc = {
+                $set: user,
+            };
+            const result = await usersCollection.insertOne(
+                filter,
+                updatedDoc,
+                option
+            );
+
+            res.send(result);
+        });
+
         // Parts APi
         app.get('/parts', async (req, res) => {
             const result = await partsCollection.find().toArray();
+
             res.send(result);
         });
 
@@ -70,7 +93,7 @@ const run = async () => {
         app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
-            
+
             res.send(result);
         });
 
@@ -129,13 +152,12 @@ const run = async () => {
         });
 
         // reviews api
-        app.post('/reviews', async (req, res) =>{
+        app.post('/reviews', async (req, res) => {
             const reviews = req.body;
             const result = await reviewsCollection.insertOne(reviews);
-            
-            res.send(result)
-        })
-        
+
+            res.send(result);
+        });
     } finally {
     }
 };
