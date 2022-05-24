@@ -74,26 +74,50 @@ const run = async () => {
         });
 
         // user api
+        app.get('/users', verifyJwt, async (req, res) => {
+            const result = await usersCollection.find().toArray();
+
+            res.send(result);
+        });
+
+        // user post api
         app.put('/users/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
-            const filter = { email };
-            const option = { upsart: true };
 
-            const updatedDoc = {
+            const filter = { email };
+            const option = { upsert: true };
+
+            const updateDoc = {
                 $set: user,
             };
-            const result = await usersCollection.insertOne(
+            const result = await usersCollection.updateOne(
                 filter,
-                updatedDoc,
+                updateDoc,
                 option
             );
 
-            const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: '1d',
-            });
+            const accessToken = jwt.sign(
+                { email },
+                process.env.ACCESS_TOKEN_SECRET,
+                {
+                    expiresIn: '1d',
+                }
+            );
 
-            res.send({ result, token });
+            res.send({ result, accessToken });
+        });
+
+        // make admin post api
+        app.put('/users/admin/:email', verifyJwt, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email };
+            const updatedDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await usersCollection.updateOne(filter, updatedDoc);
+
+            res.send(result);
         });
 
         // Parts APi
@@ -113,7 +137,7 @@ const run = async () => {
         });
 
         // post order data form client
-        app.post('/orders', async (req, res) => {
+        app.post('/orders', verifyJwt, async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
 
