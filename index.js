@@ -111,13 +111,25 @@ const run = async () => {
         // make admin post api
         app.put('/users/admin/:email', verifyJwt, async (req, res) => {
             const email = req.params.email;
-            const filter = { email };
-            const updatedDoc = {
-                $set: { role: 'admin' },
-            };
-            const result = await usersCollection.updateOne(filter, updatedDoc);
+            const requester = req.decoded.email;
+            const requesterAccount = await usersCollection.findOne({
+                email: requester,
+            });
 
-            res.send(result);
+            if (requesterAccount.role === 'admin') {
+                const filter = { email };
+                const updatedDoc = {
+                    $set: { role: 'admin' },
+                };
+                const result = await usersCollection.updateOne(
+                    filter,
+                    updatedDoc
+                );
+
+                res.send(result);
+            } else {
+                res.status(403).send({ message: 'Request Forbidden' });
+            }
         });
 
         // Parts APi
