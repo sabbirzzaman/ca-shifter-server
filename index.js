@@ -83,7 +83,7 @@ const run = async () => {
         // user api by email
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
-            const filter = {email};
+            const filter = { email };
             const result = await usersCollection.findOne(filter);
 
             res.send(result);
@@ -175,7 +175,7 @@ const run = async () => {
 
         // orders api
         app.get('/order', verifyJwt, async (req, res) => {
-            const result = await ordersCollection.find().toArray()
+            const result = await ordersCollection.find().toArray();
 
             res.send(result);
         });
@@ -219,6 +219,26 @@ const run = async () => {
                 updatedDoc
             );
             const result = await paymentCollection.insertOne(payment);
+
+            res.send(updatedOrder);
+        });
+
+        // update order status api
+        app.patch('/order/:id', verifyJwt, async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: ObjectId(id) };
+
+            const updatedDoc = {
+                $set: {
+                    status: data.status,
+                },
+            };
+
+            const updatedOrder = await ordersCollection.updateOne(
+                filter,
+                updatedDoc
+            );
 
             res.send(updatedOrder);
         });
