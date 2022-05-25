@@ -165,6 +165,15 @@ const run = async () => {
             res.send(result);
         });
 
+        // delete parts api
+        app.delete('/part/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await partsCollection.deleteOne(filter);
+
+            res.send(result);
+        });
+
         // post order data form client
         app.post('/orders', verifyJwt, async (req, res) => {
             const order = req.body;
