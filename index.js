@@ -173,6 +173,13 @@ const run = async () => {
             res.send(result);
         });
 
+        // orders api
+        app.get('/order', verifyJwt, async (req, res) => {
+            const result = await ordersCollection.find().toArray()
+
+            res.send(result);
+        });
+
         // orders api by id
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
