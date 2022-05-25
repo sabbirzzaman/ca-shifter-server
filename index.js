@@ -80,7 +80,6 @@ const run = async () => {
             res.send(result);
         });
 
-
         // user api by email
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -140,6 +139,14 @@ const run = async () => {
             } else {
                 res.status(403).send({ message: 'Request Forbidden' });
             }
+        });
+
+        // Parts Post APi
+        app.post('/part', verifyJwt, async (req, res) => {
+            const parts = req.body;
+            const result = await partsCollection.insertOne(parts);
+
+            res.send(result);
         });
 
         // Parts APi
