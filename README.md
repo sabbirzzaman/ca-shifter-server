@@ -2,7 +2,7 @@
 
 ## [Live Link](#)
 
-## [Server Side Repo](https://github.com/programming-hero-web-course1/manufacturer-website-server-side-sabbirzzaman)
+## [Client Side Repo](https://github.com/programming-hero-web-course1/manufacturer-website-client-side-sabbirzzaman)
 
 ### Website Purpose
 Car shifter is a car parts manufacturer. We sell car parts. Users can create their accounts and purchase car parts for their cars. users can order a larger quantity of products. They can create their account via form or google. Also, users can make payments by card method. This website also has an admin dashboard for managing orders and users. Users and admin both can update their profile details as well.
