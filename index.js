@@ -270,7 +270,7 @@ const run = async () => {
         });
 
         // reviews api
-        app.get('/review', verifyJwt, async (req, res) => {
+        app.get('/review', async (req, res) => {
             const result = await reviewsCollection.find().toArray()
 
             res.send(result);
