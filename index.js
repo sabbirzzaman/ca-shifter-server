@@ -261,13 +261,20 @@ const run = async () => {
             res.send(result);
         });
 
-        // reviews api
+        // reviews post api
         app.post('/reviews', async (req, res) => {
             const reviews = req.body;
             const result = await reviewsCollection.insertOne(reviews);
 
             res.send(result);
         });
+
+        // reviews api
+        app.get('/review', verifyJwt, async (req, res) => {
+            const result = await reviewsCollection.find().toArray()
+
+            res.send(result);
+        })
     } finally {
     }
 };
